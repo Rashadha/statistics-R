@@ -1,0 +1,39 @@
+
+set.seed(1234) # set seed for reproducibility
+n <- 1000 # number of simulations
+p1 <- 0.55 # probability of player 1 winning a point when serving
+p2 <- 0.40 # probability of player 1 winning a point when not serving
+
+# function to simulate a game
+simulate_game <- function(rule) {
+  score <- c(0, 0) # initialize score
+  while (max(score) < 2) { # play until someone wins two points
+    if (rule == "A") { # rule A: server is winner of previous point
+      if (sample(c(TRUE, FALSE), size = 1, prob = c(p1, 1 - p1))) {
+        score[1] <- score[1] + 1 # player 1 wins point
+      } else {
+        score[2] <- score[2] + 1 # player 2 wins point
+      }
+    } else { # rule B: server is loser of previous point
+      if (sample(c(TRUE, FALSE), size = 1, prob = c(p2, 1 - p2))) {
+        score[2] <- score[2] + 1 # player 2 wins point
+      } else {
+        score[1] <- score[1] + 1 # player 1 wins point
+      }
+    }
+  }
+  
+  return(score)
+}
+
+# simulate games under each rule and calculate winning probability and expected length of game
+results <- data.frame(rule = c("A", "B"), win_prob = numeric(2), exp_length = numeric(2))
+for (i in seq_along(results$rule)) {
+  scores <- replicate(n, simulate_game(results$rule[i]))
+  
+  results$win_prob[i] <- mean(scores[1, ] == 2)
+  
+  results$exp_length[i] <- mean(rowSums(scores))
+}
+
+results

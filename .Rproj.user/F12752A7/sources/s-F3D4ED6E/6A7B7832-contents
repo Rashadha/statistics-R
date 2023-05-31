@@ -1,0 +1,23 @@
+set.seed(1234) # for reproducibility
+
+# Define the transition probability matrix
+P <- matrix(c(0.1,0.2,0.7,0.2,0.4,0.4,0.1,0.3,0.6), nrow=3, byrow=TRUE, dimnames=list(c("A","B","C"),c("A","B","C")))
+
+# Initialize variables
+current_state <- "A"
+states <- c(current_state)
+# states <- rep(current_state, 7) # buy A type of beer all the first week
+
+# Simulate 5 possible beer purchases for 10 weeks
+for (i in 1:9){
+  next_state <- sample(c("A","B","C"),1,replace=TRUE,prob=P[current_state,])
+  states <- c(states,next_state)
+  current_state <- next_state
+}
+
+# Print the results
+cat("5 possible beer purchases for 10 weeks, starting from brand A:\n")
+for (i in 1:5){
+  cat("Realization", i,":",sample(states,10,replace=TRUE),"\n")
+}
+
